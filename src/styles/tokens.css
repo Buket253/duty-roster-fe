@@ -1,0 +1,254 @@
+:root{
+  --bg:#F4F6F5; --surface:#FFFFFF; --surface-2:#EDF1EF;
+  --ink:#12201A; --ink-dim:#57685F; --line:#DBE3DF;
+  --accent:#0E6E63; --accent-soft:#DCEFEA;
+  --warn:#A8631B; --warn-soft:#F5E6D3;
+  --danger:#C1443A; --danger-soft:#F7DEDC;
+
+  --radius:10px;
+  --radius-sm:6px;
+  --shadow:0 1px 2px rgba(18,32,26,.06), 0 8px 24px rgba(18,32,26,.05);
+  --sans:'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono:'IBM Plex Mono', ui-monospace, monospace;
+}
+
+*, *::before, *::after { box-sizing:border-box; }
+
+html, body, #root { height:100%; }
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:14px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+
+h1,h2,h3,h4{ margin:0; font-weight:600; letter-spacing:-.01em; }
+h1{ font-size:22px; }
+h2{ font-size:17px; }
+h3{ font-size:15px; }
+
+a{ color:var(--accent); text-decoration:none; }
+
+.mono{ font-family:var(--mono); font-variant-numeric:tabular-nums; }
+.dim{ color:var(--ink-dim); }
+.muted{ color:var(--ink-dim); font-size:13px; }
+
+/* ---------- Kartlar ---------- */
+.card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+.card-pad{ padding:18px; }
+.card-head{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; padding:14px 18px; border-bottom:1px solid var(--line);
+}
+
+/* ---------- Butonlar ---------- */
+.btn{
+  display:inline-flex; align-items:center; gap:7px;
+  font:inherit; font-weight:500;
+  padding:8px 14px;
+  border:1px solid var(--line);
+  border-radius:var(--radius-sm);
+  background:var(--surface);
+  color:var(--ink);
+  cursor:pointer;
+  transition:background .12s, border-color .12s, opacity .12s;
+}
+.btn:hover:not(:disabled){ background:var(--surface-2); }
+.btn:disabled{ opacity:.5; cursor:not-allowed; }
+.btn-primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
+.btn-primary:hover:not(:disabled){ background:#0b5a51; }
+.btn-ghost{ background:transparent; border-color:transparent; color:var(--ink-dim); }
+.btn-ghost:hover:not(:disabled){ background:var(--surface-2); color:var(--ink); }
+.btn-sm{ padding:5px 10px; font-size:13px; }
+.btn-danger{ color:var(--danger); border-color:var(--danger-soft); background:var(--danger-soft); }
+
+/* ---------- Form ---------- */
+.field{ display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+.field > label{ font-size:13px; font-weight:500; color:var(--ink-dim); }
+.input, .select{
+  font:inherit; padding:9px 11px;
+  border:1px solid var(--line); border-radius:var(--radius-sm);
+  background:var(--surface); color:var(--ink); width:100%;
+}
+.input:focus, .select:focus{ outline:2px solid var(--accent-soft); border-color:var(--accent); }
+.input.mono{ font-family:var(--mono); }
+
+/* Açma/kapama anahtarı */
+.switch{ display:flex; align-items:center; gap:10px; cursor:pointer; }
+.switch input{ position:absolute; opacity:0; width:0; height:0; }
+.switch-track{
+  width:38px; height:22px; border-radius:11px;
+  background:var(--line); position:relative; transition:background .15s; flex:none;
+}
+.switch-track::after{
+  content:''; position:absolute; top:3px; left:3px;
+  width:16px; height:16px; border-radius:50%;
+  background:#fff; transition:transform .15s;
+  box-shadow:0 1px 2px rgba(18,32,26,.25);
+}
+.switch input:checked + .switch-track{ background:var(--accent); }
+.switch input:checked + .switch-track::after{ transform:translateX(16px); }
+
+/* Kaydırıcı */
+.slider{ width:100%; accent-color:var(--accent); }
+
+/* ---------- Rozetler ---------- */
+.badge{
+  display:inline-flex; align-items:center; gap:5px;
+  padding:3px 9px; border-radius:99px;
+  font-size:12px; font-weight:500; white-space:nowrap;
+}
+.badge-accent{ background:var(--accent-soft); color:var(--accent); }
+.badge-warn{ background:var(--warn-soft); color:var(--warn); }
+.badge-danger{ background:var(--danger-soft); color:var(--danger); }
+.badge-dim{ background:var(--surface-2); color:var(--ink-dim); }
+
+/* ---------- Uyarı kutusu ---------- */
+.alert{ padding:10px 13px; border-radius:var(--radius-sm); font-size:13px; }
+.alert-danger{ background:var(--danger-soft); color:var(--danger); }
+.alert-warn{ background:var(--warn-soft); color:var(--warn); }
+.alert-ok{ background:var(--accent-soft); color:var(--accent); }
+
+/* ---------- Tablo ---------- */
+.table{ width:100%; border-collapse:collapse; }
+.table th{
+  text-align:left; font-size:12px; font-weight:600;
+  text-transform:uppercase; letter-spacing:.04em;
+  color:var(--ink-dim); padding:10px 14px; border-bottom:1px solid var(--line);
+}
+.table td{ padding:11px 14px; border-bottom:1px solid var(--line); }
+.table tr:last-child td{ border-bottom:none; }
+
+/* ---------- Uygulama iskeleti ---------- */
+.app{ display:flex; min-height:100vh; }
+.main{ flex:1; min-width:0; display:flex; flex-direction:column; }
+.topbar{
+  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  padding:14px 22px; background:var(--surface); border-bottom:1px solid var(--line);
+}
+.topbar .spacer{ flex:1; }
+.content{ padding:22px; flex:1; }
+
+/* ---------- Sol nav ---------- */
+.sidebar{
+  width:222px; flex:none; background:var(--surface);
+  border-right:1px solid var(--line); padding:20px 14px;
+  display:flex; flex-direction:column; gap:4px;
+}
+.sidebar .brand{ padding:0 10px 18px; }
+.sidebar .brand-name{ font-weight:600; font-size:15px; }
+.navlink{
+  display:flex; align-items:center; gap:10px;
+  padding:9px 12px; border-radius:var(--radius-sm);
+  color:var(--ink-dim); font-weight:500; font-size:14px;
+}
+.navlink:hover{ background:var(--surface-2); color:var(--ink); }
+.navlink.active{ background:var(--accent-soft); color:var(--accent); }
+.sidebar .bottom{ margin-top:auto; }
+
+/* ---------- Grid yardımcıları ---------- */
+.stat-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:20px; }
+.stat{ padding:16px 18px; }
+.stat-label{ font-size:12px; color:var(--ink-dim); text-transform:uppercase; letter-spacing:.04em; }
+.stat-value{ font-family:var(--mono); font-size:26px; font-weight:600; margin-top:6px; }
+.unit-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:14px; }
+.split{ display:grid; grid-template-columns:300px 1fr; gap:18px; align-items:start; }
+
+@media (max-width:900px){
+  .stat-row{ grid-template-columns:repeat(2,1fr); }
+  .split{ grid-template-columns:1fr; }
+}
+
+/* ---------- Ekip listesi ---------- */
+.roster-row{ padding:12px 18px; border-bottom:1px solid var(--line); }
+.roster-row:last-child{ border-bottom:none; }
+.roster-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+.bar{ height:5px; border-radius:3px; background:var(--surface-2); margin:9px 0 8px; overflow:hidden; }
+.bar-fill{ height:100%; border-radius:3px; transition:width .2s; }
+.roster-tags{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+
+/* ---------- Takvim ---------- */
+.calendar{ display:grid; grid-template-columns:repeat(7,1fr); gap:1px; background:var(--line); border-radius:var(--radius); overflow:hidden; }
+.cal-head{
+  background:var(--surface-2); padding:9px 6px; text-align:center;
+  font-size:12px; font-weight:600; color:var(--ink-dim);
+  text-transform:uppercase; letter-spacing:.04em;
+}
+.cal-cell{
+  background:var(--surface); min-height:96px; padding:7px;
+  display:flex; flex-direction:column; gap:4px; align-items:stretch;
+  border:none; border-radius:0; font:inherit; text-align:left; cursor:pointer;
+  transition:background .12s;
+}
+.cal-cell:hover{ background:var(--surface-2); }
+.cal-empty{ background:var(--bg); cursor:default; }
+.cal-weekend .cal-daynum{ color:var(--accent); }
+.cal-weekend{ background:#FAFCFB; }
+.cal-flagged{ box-shadow:inset 0 0 0 2px var(--danger); }
+.cal-daynum{ font-size:12px; font-weight:600; color:var(--ink-dim); }
+
+.chip{
+  font-size:12px; padding:3px 7px; border-radius:var(--radius-sm);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.chip-nobet{ background:var(--accent-soft); color:var(--accent); font-weight:500; }
+.chip-mesai{ background:var(--surface-2); color:var(--ink-dim); }
+.cal-flag{
+  font-size:11px; font-weight:500; color:var(--danger);
+  background:var(--danger-soft); border-radius:4px; padding:2px 6px;
+}
+
+/* ---------- Modal ---------- */
+.modal-backdrop{
+  position:fixed; inset:0; background:rgba(18,32,26,.35);
+  display:flex; align-items:center; justify-content:center; padding:20px; z-index:50;
+}
+.modal{ width:100%; max-width:440px; max-height:86vh; overflow:auto; background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow); }
+
+/* ---------- Giriş ---------- */
+.login-bg{
+  min-height:100vh; background:var(--accent);
+  display:flex; align-items:center; justify-content:center; padding:20px;
+}
+.login-card{ width:100%; max-width:368px; }
+
+.month-nav{ display:flex; align-items:center; gap:2px; }
+
+.etki-satir{
+  display:flex; justify-content:space-between; align-items:center; gap:10px;
+  padding:9px 0; border-bottom:1px solid var(--line); font-size:13px;
+}
+.etki-satir:last-child{ border-bottom:none; }
+
+/* ---------- Paylaşım görünümü (mobil öncelikli) ---------- */
+.public{ max-width:520px; margin:0 auto; min-height:100vh; background:var(--surface); }
+.public-head{
+  position:sticky; top:0; z-index:5;
+  background:var(--accent); color:#fff; padding:16px;
+}
+.public-unit{ font-size:18px; font-weight:600; }
+.public-nav{ display:flex; align-items:center; justify-content:space-between; margin-top:10px; }
+.public-nav .btn-ghost{ color:#fff; }
+.public-nav .btn-ghost:hover{ background:rgba(255,255,255,.15); color:#fff; }
+
+.public-body{ padding:12px 14px 20px; }
+.public-row{
+  display:flex; gap:14px; align-items:flex-start;
+  padding:11px 6px; border-bottom:1px solid var(--line);
+}
+.public-row:last-child{ border-bottom:none; }
+.public-weekend{ background:var(--surface-2); border-radius:var(--radius-sm); }
+.public-date{ width:38px; flex:none; text-align:center; }
+.public-day{ font-size:18px; font-weight:600; line-height:1.2; }
+.public-people{ flex:1; min-width:0; display:flex; flex-direction:column; gap:6px; }
+.public-person{ display:flex; gap:8px; align-items:center; font-size:14px; }
+.public-foot{ padding:14px 16px 26px; text-align:center; border-top:1px solid var(--line); }
