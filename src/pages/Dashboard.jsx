@@ -52,7 +52,7 @@ export default function Dashboard() {
 
   return (
     <div className="app">
-      <Sidebar />
+      <Sidebar unitId={birimler[0]?._id} />
       <div className="main">
         <header className="topbar">
           <h1>Panel</h1>

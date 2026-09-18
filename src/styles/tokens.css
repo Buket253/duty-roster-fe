@@ -252,3 +252,7 @@ a{ color:var(--accent); text-decoration:none; }
 .public-people{ flex:1; min-width:0; display:flex; flex-direction:column; gap:6px; }
 .public-person{ display:flex; gap:8px; align-items:center; font-size:14px; }
 .public-foot{ padding:14px 16px 26px; text-align:center; border-top:1px solid var(--line); }
+
+.navlink-disabled{ opacity:.45; cursor:not-allowed; }
+.navlink-disabled:hover{ background:none; color:var(--ink-dim); }
+.navlink-btn{ width:100%; background:none; border:none; cursor:pointer; font:inherit; text-align:left; }
