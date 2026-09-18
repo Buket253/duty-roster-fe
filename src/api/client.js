@@ -21,14 +21,25 @@ export class ApiError extends Error {
 /** JWT header'ını otomatik ekleyen fetch sarmalayıcı. */
 async function request(path, { method = 'GET', body, auth = true } = {}) {
   const token = getToken();
-  const res = await fetch(BASE + path, {
-    method,
-    headers: {
-      ...(body ? { 'Content-Type': 'application/json' } : {}),
-      ...(auth && token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: body ? JSON.stringify(body) : undefined,
-  });
+
+  let res;
+  try {
+    res = await fetch(BASE + path, {
+      method,
+      headers: {
+        ...(body ? { 'Content-Type': 'application/json' } : {}),
+        ...(auth && token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+  } catch {
+    // Tarayıcı isteği hiç gönderemedi: API kapalı ya da CORS engellemiş olabilir.
+    // Tarayıcının kendi mesajı ("Load failed" / "Failed to fetch") sebebi göstermiyor.
+    throw new ApiError(
+      0,
+      `API'ye ulaşılamadı (${BASE}). Backend çalışıyor mu ve CORS_ORIGIN bu adresi (${window.location.origin}) içeriyor mu?`
+    );
+  }
 
   if (res.status === 401 && auth) {
     clearToken();
