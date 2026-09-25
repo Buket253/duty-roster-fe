@@ -5,6 +5,25 @@ export const getToken = () => localStorage.getItem(TOKEN_KEY);
 export const setToken = (token) => localStorage.setItem(TOKEN_KEY, token);
 export const clearToken = () => localStorage.removeItem(TOKEN_KEY);
 
+/**
+ * Uçuştaki istek sayacı. Ekranın herhangi bir yerinde API beklenirken üstte
+ * ilerleme çubuğu gösterilebilsin diye tek merkezde tutulur; her çağrı yerine
+ * ayrı bayrak koymaya gerek kalmaz.
+ */
+let aktifIstek = 0;
+const aboneler = new Set();
+
+const bildir = () => {
+  for (const f of aboneler) f(aktifIstek);
+};
+
+/** Sayaç değiştikçe çağrılır; abonelikten çıkmak için dönen fonksiyon kullanılır. */
+export function istekleriIzle(dinleyici) {
+  aboneler.add(dinleyici);
+  dinleyici(aktifIstek);
+  return () => aboneler.delete(dinleyici);
+}
+
 // Token geçersizleştiğinde AuthContext'in oturumu kapatabilmesi için.
 let onUnauthorized = () => {};
 export const setUnauthorizedHandler = (fn) => {
@@ -22,6 +41,17 @@ export class ApiError extends Error {
 async function request(path, { method = 'GET', body, auth = true } = {}) {
   const token = getToken();
 
+  aktifIstek += 1;
+  bildir();
+  try {
+    return await gonder(path, { method, body, auth, token });
+  } finally {
+    aktifIstek -= 1;
+    bildir();
+  }
+}
+
+async function gonder(path, { method, body, auth, token }) {
   let res;
   try {
     res = await fetch(BASE + path, {
@@ -75,11 +105,29 @@ export const api = {
   getSchedule: (unitId, year, month) => request(`/api/admin/schedules/${unitId}/${year}/${month}`),
   generate: (unitId, year, month) =>
     request(`/api/admin/schedules/${unitId}/${year}/${month}/generate`, { method: 'POST' }),
+  createBlank: (unitId, year, month, { force = false } = {}) =>
+    request(`/api/admin/schedules/${unitId}/${year}/${month}/blank${force ? '?force=1' : ''}`, {
+      method: 'POST',
+    }),
+  scheduleArchives: (unitId, year, month) =>
+    request(`/api/admin/schedules/${unitId}/${year}/${month}/archives`),
+  restoreSchedule: (unitId, year, month, archiveId) =>
+    request(`/api/admin/schedules/${unitId}/${year}/${month}/restore/${archiveId}`, {
+      method: 'POST',
+    }),
   publish: (scheduleId) => request(`/api/admin/schedules/${scheduleId}/publish`, { method: 'POST' }),
 
   candidates: (assignmentId) => request(`/api/admin/assignments/${assignmentId}/candidates`),
+  slotCandidates: (unitId, year, month, { date, shiftType }) =>
+    request(
+      `/api/admin/schedules/${unitId}/${year}/${month}/candidates?date=${date}&shiftType=${shiftType}`
+    ),
   updateAssignment: (assignmentId, employee) =>
     request(`/api/admin/assignments/${assignmentId}`, { method: 'PUT', body: { employee } }),
+  addAssignment: (unitId, year, month, body) =>
+    request(`/api/admin/schedules/${unitId}/${year}/${month}/assignments`, { method: 'POST', body }),
+  removeAssignment: (assignmentId) =>
+    request(`/api/admin/assignments/${assignmentId}`, { method: 'DELETE' }),
 
   shareLink: (unitId) => request(`/api/admin/share-links/${unitId}`),
   publicSchedule: (token, year, month) =>

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Sidebar from '../components/Sidebar.jsx';
 import RuleForm from '../components/RuleForm.jsx';
+import { DugmeDonen, Iskelet, Yukleniyor } from '../components/Yukleniyor.jsx';
 import api from '../api/client.js';
 import { donemBaslik, flagMetni } from '../utils.js';
 
@@ -60,7 +61,14 @@ export default function KuralAyarlari() {
 
         <div className="content">
           {hata && <div className="alert alert-danger" style={{ marginBottom: 16 }}>{hata}</div>}
-          {!rule && <p className="muted">Yükleniyor…</p>}
+          {!rule && !hata && (
+            <div className="card card-pad">
+              <Yukleniyor metin="Kural seti yükleniyor…" />
+              <div style={{ marginTop: 14 }}>
+                <Iskelet satir={6} yukseklik={52} />
+              </div>
+            </div>
+          )}
 
           {rule && (
             <div className="split" style={{ gridTemplateColumns: '1fr 340px' }}>
@@ -75,6 +83,7 @@ export default function KuralAyarlari() {
 
                   <div style={{ display: 'flex', gap: 10, marginTop: 6 }}>
                     <button type="submit" className="btn btn-primary" disabled={durum === 'kaydediliyor'}>
+                      {durum === 'kaydediliyor' && <DugmeDonen />}
                       {durum === 'kaydediliyor' ? 'Kaydediliyor…' : 'Kaydet'}
                     </button>
                     <span className="muted" style={{ alignSelf: 'center' }}>

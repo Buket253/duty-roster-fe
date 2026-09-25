@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { DugmeDonen } from '../components/Yukleniyor.jsx';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 
@@ -51,6 +52,7 @@ export default function Login() {
         </div>
 
         <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }} disabled={bekliyor}>
+          {bekliyor && <DugmeDonen />}
           {bekliyor ? 'Giriş yapılıyor…' : 'Giriş Yap'}
         </button>
       </form>

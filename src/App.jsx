@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext.jsx';
+import IstekCubugu from './components/IstekCubugu.jsx';
 import Login from './pages/Login.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import NobetListesi from './pages/NobetListesi.jsx';
@@ -16,6 +17,8 @@ function Korumali({ children }) {
 export default function App() {
   return (
     <BrowserRouter>
+      {/* API'den yanıt beklenen her an sayfanın üstünde görünür. */}
+      <IstekCubugu />
       <AuthProvider>
         <Routes>
           <Route path="/login" element={<Login />} />

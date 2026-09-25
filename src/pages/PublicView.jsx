@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import api from '../api/client.js';
+import { Iskelet, Yukleniyor } from '../components/Yukleniyor.jsx';
 import { AYLAR, GUNLER, donemBaslik, haftaninGunu, haftaSonuMu, isoDay } from '../utils.js';
 
 const simdi = new Date();
@@ -44,7 +45,14 @@ export default function PublicView() {
       </header>
 
       <main className="public-body">
-        {yukleniyor && <p className="muted">Yükleniyor…</p>}
+        {yukleniyor && (
+          <>
+            <Yukleniyor metin="Nöbet listesi yükleniyor…" />
+            <div style={{ marginTop: 14 }}>
+              <Iskelet satir={6} yukseklik={44} />
+            </div>
+          </>
+        )}
         {!yukleniyor && hata && <div className="alert alert-warn">{hata}</div>}
 
         {!yukleniyor && veri && veri.days.map((g) => {
