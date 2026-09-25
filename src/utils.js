@@ -56,6 +56,7 @@ export const FLAG_METIN = {
   'gun-asiri-limit': 'Gün aşırı nöbet limiti aşıldı',
   'cifte-atama': 'Çifte atama',
   izinli: 'İzinli personel',
+  'izin-oncesi-hafta-sonu': 'İzin öncesi hafta sonu boş kalmalı',
   'limit-asildi': 'Aylık limit aşıldı',
   'nobete-giremez': 'Nöbete giremez',
   'sorumlu-yedek': 'Sorumlu hemşire yedek olarak yazıldı',
