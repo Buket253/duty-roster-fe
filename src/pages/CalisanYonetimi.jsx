@@ -69,7 +69,8 @@ export default function CalisanYonetimi() {
   const nobetSayisi = (id) => liste?.employees.find((e) => e.employee === id)?.duties ?? 0;
   const izinUyarilari = liste?.leaveWarnings ?? [];
 
-  // Başlangıç ayına göre grupla, ay ve tarih sırasına diz.
+  // Başlangıç ayına göre grupla. Aylar yeniden eskiye diziliyor: güncel ay en
+  // üstte durur, geçmiş dönemler aşağı iner. Ay içinde tarihler kronolojik kalır.
   const aylikIzinler = useMemo(() => {
     const gruplar = new Map();
     for (const l of [...izinler].sort((a, b) => isoDay(a.startDate).localeCompare(isoDay(b.startDate)))) {
@@ -77,7 +78,7 @@ export default function CalisanYonetimi() {
       if (!gruplar.has(ay)) gruplar.set(ay, []);
       gruplar.get(ay).push(l);
     }
-    return [...gruplar.entries()].sort(([a], [b]) => a.localeCompare(b));
+    return [...gruplar.entries()].sort(([a], [b]) => b.localeCompare(a));
   }, [izinler]);
 
   const calisanEkle = async (e) => {
