@@ -103,8 +103,12 @@ export const api = {
   updateRule: (unitId, body) => request(`/api/admin/rules/${unitId}`, { method: 'PUT', body }),
 
   getSchedule: (unitId, year, month) => request(`/api/admin/schedules/${unitId}/${year}/${month}`),
-  generate: (unitId, year, month) =>
-    request(`/api/admin/schedules/${unitId}/${year}/${month}/generate`, { method: 'POST' }),
+  /** keepManual: elle girilmiş atamaları koru, yalnızca kalan kadroyu üret. */
+  generate: (unitId, year, month, { keepManual = false } = {}) =>
+    request(`/api/admin/schedules/${unitId}/${year}/${month}/generate`, {
+      method: 'POST',
+      body: { keepManual },
+    }),
   createBlank: (unitId, year, month, { force = false } = {}) =>
     request(`/api/admin/schedules/${unitId}/${year}/${month}/blank${force ? '?force=1' : ''}`, {
       method: 'POST',
@@ -128,6 +132,10 @@ export const api = {
     request(`/api/admin/schedules/${unitId}/${year}/${month}/assignments`, { method: 'POST', body }),
   removeAssignment: (assignmentId) =>
     request(`/api/admin/assignments/${assignmentId}`, { method: 'DELETE' }),
+
+  addDutyBlocks: (unitId, year, month, body) =>
+    request(`/api/admin/schedules/${unitId}/${year}/${month}/duty-blocks`, { method: 'POST', body }),
+  removeDutyBlock: (blockId) => request(`/api/admin/duty-blocks/${blockId}`, { method: 'DELETE' }),
 
   shareLink: (unitId) => request(`/api/admin/share-links/${unitId}`),
   publicSchedule: (token, year, month) =>

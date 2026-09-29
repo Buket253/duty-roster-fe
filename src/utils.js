@@ -59,6 +59,7 @@ export const FLAG_METIN = {
   'izin-oncesi-hafta-sonu': 'İzin öncesi hafta sonu boş kalmalı',
   'limit-asildi': 'Aylık limit aşıldı',
   'nobete-giremez': 'Nöbete giremez',
+  'nobet-engeli': 'Nöbet yazılamaz gün',
   'sorumlu-yedek': 'Sorumlu hemşire yedek olarak yazıldı',
   pasif: 'Pasif personel',
 };
@@ -129,6 +130,7 @@ export const KOPYA_SEBEBI = {
   'otomatik-uretim': 'Otomatik taslak oluşturulmadan önce',
   'listeyi-bosalt': 'Liste boşaltılmadan önce',
   'geri-alma': 'Geri alma yapılmadan önce',
+  'ice-aktarma': 'Dışarıdan liste aktarılmadan önce',
 };
 
 export const kopyaSebebi = (kod) => KOPYA_SEBEBI[kod] ?? kod;

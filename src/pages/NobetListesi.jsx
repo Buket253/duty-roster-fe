@@ -6,6 +6,7 @@ import CalendarGrid from '../components/CalendarGrid.jsx';
 import PuantajCizelgesi from '../components/PuantajCizelgesi.jsx';
 import { DugmeDonen, Iskelet, Yukleniyor } from '../components/Yukleniyor.jsx';
 import PuantajTablosu from '../components/PuantajTablosu.jsx';
+import NobetEngelleri from '../components/NobetEngelleri.jsx';
 import api from '../api/client.js';
 import {
   VARDIYA_ADI,
@@ -30,6 +31,7 @@ const UYARI_NE_YAPMALI = {
   izinli: 'Kişi o tarihte izinli.',
   'limit-asildi': 'Aylık nöbet limiti aşılmış.',
   'nobete-giremez': 'Nöbete giremeyen personel nöbete yazılmış.',
+  'nobet-engeli': 'Kişi o gün için “nöbet yazılamaz” olarak işaretli (ör. eşi nöbette). Atamayı değiştirin ya da işareti kaldırın.',
   'sorumlu-yedek': 'Başka aday kalmadığı için sorumlu hemşire nöbete girmiş. İhlal değil, bilgi.',
 };
 
@@ -48,6 +50,8 @@ export default function NobetListesi() {
   const [paylasim, setPaylasim] = useState(null);
   // Geri alınabilir kopyalar; yalnızca panel açıkken yüklenir.
   const [kopyalar, setKopyalar] = useState(null);
+  // Elle girilmiş atama varken "Otomatik Taslak Oluştur" önce ne yapılacağını sorar.
+  const [uretimSorusu, setUretimSorusu] = useState(false);
 
   useEffect(() => {
     api.listUnits().then(setBirimler).catch((e) => setHata(e.message));
@@ -74,11 +78,24 @@ export default function NobetListesi() {
     setAy(d.getUTCMonth() + 1);
   };
 
-  const uret = async () => {
+  /**
+   * Elle girilmiş atama varsa bunların korunup korunmayacağı sorulur; yoksa
+   * doğrudan tüm ay üretilir.
+   */
+  const uret = () => {
+    if (veri?.handSetCount > 0) {
+      setUretimSorusu(true);
+      return;
+    }
+    uretimiCalistir(false);
+  };
+
+  const uretimiCalistir = async (keepManual) => {
+    setUretimSorusu(false);
     setMesgul('uret');
     setHata('');
     try {
-      setVeri(await api.generate(unitId, yil, ay));
+      setVeri(await api.generate(unitId, yil, ay, { keepManual }));
     } catch (e) {
       setHata(e.message);
     } finally {
@@ -432,6 +449,10 @@ export default function NobetListesi() {
           )}
 
           {!yukleniyor && veri && (
+            <NobetEngelleri veri={veri} unitId={unitId} onGuncellendi={setVeri} />
+          )}
+
+          {!yukleniyor && veri && (
             <PuantajCizelgesi
               year={veri.year}
               month={veri.month}
@@ -449,6 +470,45 @@ export default function NobetListesi() {
           )}
         </div>
       </div>
+
+      {uretimSorusu && veri && (
+        <div className="modal-backdrop" onClick={() => setUretimSorusu(false)}>
+          <div
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="uretim-sorusu-baslik"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="card-head">
+              <h2 id="uretim-sorusu-baslik">Elle girilen atamalar korunsun mu?</h2>
+            </div>
+            <div className="card-pad">
+              <p style={{ marginTop: 0 }}>
+                {donemBaslik(yil, ay)} listesinde elle girdiğiniz{' '}
+                <strong>{veri.handSetCount} atama</strong> var.
+              </p>
+              <p className="muted" style={{ marginBottom: 0 }}>
+                Korursanız bu atamalar olduğu gibi kalır; otomatik taslak yalnızca
+                kalan boş yerleri kurallara göre doldurur. Korumazsanız tüm ay
+                baştan oluşturulur. Her iki durumda da mevcut liste “Geri Al…”
+                altına kopyalanır.
+              </p>
+              <div className="soru-eylemler">
+                <button type="button" className="btn btn-primary" onClick={() => uretimiCalistir(true)}>
+                  Koru, kalanını oluştur
+                </button>
+                <button type="button" className="btn" onClick={() => uretimiCalistir(false)}>
+                  Korumadan tüm ayı baştan oluştur
+                </button>
+                <button type="button" className="btn btn-ghost" onClick={() => setUretimSorusu(false)}>
+                  Vazgeç
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {secilenGun && veri && (
         <GunDuzenleyici
@@ -652,6 +712,15 @@ function GunDuzenleyici({ gun, veri, unitId, onKapat, onKaydedildi }) {
                       {a.manual && (
                         <span className="badge badge-accent" style={{ marginLeft: 8 }}>
                           Bu güne özel
+                        </span>
+                      )}
+                      {a.employee && a.setByHand && (
+                        <span
+                          className="badge badge-dim"
+                          style={{ marginLeft: 8 }}
+                          title="Otomatik taslakta korunmasını seçebilirsiniz"
+                        >
+                          Elle girildi
                         </span>
                       )}
                       {a.manual && (

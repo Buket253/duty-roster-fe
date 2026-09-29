@@ -477,3 +477,50 @@ textarea.input{ height:auto; padding:9px 11px; }
 @media (prefers-reduced-motion:reduce){
   .istek-cubugu-dolgu, .donen, .iskelet{ animation-duration:0s; }
 }
+
+/* ---------- Nöbet yazılamaz günler ---------- */
+.engel-duzen{
+  display:grid; grid-template-columns:minmax(220px, 1fr) minmax(260px, 340px);
+  gap:18px; align-items:start;
+}
+.engel-form .field{ margin-bottom:12px; }
+.engel-form .input, .engel-form .select{ width:100%; }
+.engel-takvim{ display:grid; grid-template-columns:repeat(7, 1fr); gap:3px; }
+.engel-takvim.pasif{ opacity:.55; }
+.engel-gun{
+  display:flex; align-items:center; justify-content:center;
+  height:34px; padding:0; border:1px solid var(--line); border-radius:var(--radius-sm);
+  background:var(--surface); color:var(--ink); cursor:pointer;
+  font-family:var(--mono); font-variant-numeric:tabular-nums; font-size:13px;
+}
+.engel-gun.hafta-sonu{ color:var(--accent); background:#FAFCFB; }
+.engel-gun:hover:not(:disabled){ background:var(--surface-2); }
+.engel-gun:disabled{ cursor:default; }
+.engel-gun.secili{ background:var(--warn); border-color:var(--warn); color:#fff; font-weight:600; }
+.engel-rozetler{ display:flex; flex-wrap:wrap; gap:6px; }
+
+@media (max-width:720px){
+  .engel-duzen{ grid-template-columns:1fr; }
+}
+
+/* ---------- Taslak üretimi sorusu ---------- */
+.soru-eylemler{ display:flex; flex-direction:column; gap:8px; margin-top:16px; }
+.soru-eylemler .btn{ width:100%; }
+
+/* ---------- Sol nav: birim grubu ---------- */
+.nav-grup{
+  margin-top:14px; padding-top:14px; border-top:1px solid var(--line);
+  display:flex; flex-direction:column; gap:4px;
+}
+.nav-grup-baslik{
+  padding:0 12px; font-size:11px; font-weight:600; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--ink-dim);
+}
+.sidebar .nav-birim{ width:100%; margin:2px 0 6px; font-weight:500; }
+.nav-birim-bos{ padding:4px 12px 8px; }
+/* Birime bağlı ekranlar seçili birimin altında, girintili bir ağaç gibi durur. */
+.nav-alt{
+  display:flex; flex-direction:column; gap:2px;
+  margin-left:10px; padding-left:8px; border-left:2px solid var(--line);
+}
+.nav-alt .navlink{ padding:7px 10px; font-size:13.5px; }

@@ -111,7 +111,8 @@ export default function Dashboard() {
 
   return (
     <div className="app">
-      <Sidebar unitId={birimler[0]?._id} />
+      {/* Panel birimsizdir: menü son açılan birimi kendisi hatırlar. */}
+      <Sidebar />
       <div className="main">
         <header className="topbar">
           <h1>Panel</h1>

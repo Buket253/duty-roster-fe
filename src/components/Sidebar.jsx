@@ -1,32 +1,68 @@
-import { useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import api from '../api/client.js';
 
 const SON_BIRIM = 'nobet-son-birim';
 
+/** Birim bağlamında çalışan ekranlar; menüde seçili birimin altında durur. */
+const BIRIM_EKRANLARI = [
+  ['/nobet-listesi', 'Nöbet Listesi'],
+  ['/kurallar', 'Kural Ayarları'],
+  ['/calisanlar', 'Çalışanlar & İzin'],
+];
+
+const hatirla = (id) => {
+  try {
+    localStorage.setItem(SON_BIRIM, id);
+  } catch {
+    /* depolama kapalıysa yalnızca hatırlanmaz */
+  }
+};
+
+const hatirlanan = () => {
+  try {
+    return localStorage.getItem(SON_BIRIM);
+  } catch {
+    return null;
+  }
+};
+
 /**
- * Sol kalıcı nav. Birim bağlamı olan bağlantılar aktif birimi taşır.
- * Panel gibi birimsiz ekranlarda son açılan birim hatırlanır; hiç birim
- * yoksa bu bağlantılar pasif görünür.
+ * Sol kalıcı nav. Panel birimden bağımsızdır ve en üstte tek başına durur;
+ * birime bağlı ekranlar ise bir "Birim" grubunun içinde, seçili birimin
+ * altında listelenir. Birim değiştirilince aynı ekranın o birimdeki hâline
+ * gidilir. Panel gibi birimsiz ekranlarda son açılan birim hatırlanır.
  */
 export default function Sidebar({ unitId }) {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const [birimler, setBirimler] = useState([]);
 
-  // Bir birim ekranındayken hatırla ki Panel'e dönünce nav çalışmaya devam etsin.
   useEffect(() => {
-    if (unitId) localStorage.setItem(SON_BIRIM, unitId);
+    api.listUnits().then(setBirimler).catch(() => setBirimler([]));
+  }, []);
+
+  // Bir birim ekranındayken hatırla ki Panel'e dönünce aynı birim seçili kalsın.
+  useEffect(() => {
+    if (unitId) hatirla(unitId);
   }, [unitId]);
 
-  const aktif = unitId ?? localStorage.getItem(SON_BIRIM);
+  const kayitli = unitId ?? hatirlanan();
+  // Hatırlanan birim silinmiş olabilir; o zaman ilk birime düşülür.
+  const aktif =
+    birimler.length === 0 || birimler.some((b) => b._id === kayitli)
+      ? kayitli
+      : birimler[0]._id;
+
   const cls = ({ isActive }) => `navlink${isActive ? ' active' : ''}`;
 
-  const birimLink = (prefix, etiket) =>
-    aktif ? (
-      <NavLink to={`${prefix}/${aktif}`} className={cls}>{etiket}</NavLink>
-    ) : (
-      <span className="navlink navlink-disabled" title="Önce panelden bir birim açın">{etiket}</span>
-    );
+  const birimDegistir = (yeni) => {
+    hatirla(yeni);
+    const ekran = BIRIM_EKRANLARI.find(([onek]) => pathname.startsWith(`${onek}/`));
+    navigate(`${ekran ? ekran[0] : '/nobet-listesi'}/${yeni}`);
+  };
 
   return (
     <nav className="sidebar">
@@ -36,9 +72,36 @@ export default function Sidebar({ unitId }) {
       </div>
 
       <NavLink to="/dashboard" className={cls}>Panel</NavLink>
-      {birimLink('/nobet-listesi', 'Nöbet Listesi')}
-      {birimLink('/kurallar', 'Kural Ayarları')}
-      {birimLink('/calisanlar', 'Çalışanlar & İzin')}
+
+      <div className="nav-grup">
+        <label className="nav-grup-baslik" htmlFor="nav-birim">Birim</label>
+        {birimler.length > 0 ? (
+          <select
+            id="nav-birim"
+            className="select nav-birim"
+            value={aktif ?? ''}
+            onChange={(e) => birimDegistir(e.target.value)}
+          >
+            {birimler.map((b) => (
+              <option key={b._id} value={b._id}>{b.name}</option>
+            ))}
+          </select>
+        ) : (
+          <div className="muted nav-birim-bos">Henüz birim yok</div>
+        )}
+
+        <div className="nav-alt">
+          {BIRIM_EKRANLARI.map(([onek, etiket]) =>
+            aktif ? (
+              <NavLink key={onek} to={`${onek}/${aktif}`} className={cls}>{etiket}</NavLink>
+            ) : (
+              <span key={onek} className="navlink navlink-disabled" title="Önce panelden bir birim oluşturun">
+                {etiket}
+              </span>
+            )
+          )}
+        </div>
+      </div>
 
       <div className="bottom">
         <button
